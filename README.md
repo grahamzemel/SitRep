@@ -1,4 +1,4 @@
-# Situation Report (Sit Rep) Bot: automated daily feed through Telegram created by Graham Zemel
+# Situation Report (Sit Rep) Bot by Graham Zemel
 Written by Graham Zemel, using Selenium, Python, and Heroku
 # NOTE: 
 ## UPDATE LINES 122-125 IN 'bot.py' IF RUNNING LOCALLY  
