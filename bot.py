@@ -271,8 +271,8 @@ def sitRep(bot, update):
 
 
 if __name__ == '__main__':
-    botToken = UPDATER_KEY
-    updater = Updater(botToken, use_context=True)
+    print(UPDATER_KEY)
+    updater = Updater(UPDATER_KEY, use_context=True)
 
     dp = updater.dispatcher
     dp.add_handler(CommandHandler('start', start_bot))
