@@ -143,6 +143,7 @@ def sitRep(bot, update):
 
     # Medium followers via selenium automation
     #
+    print(MEDIUMUSER)
     try:
         driver.get("https://{}.medium.com/followers".format(MEDIUMUSER))
         bot.message.reply_text("Current Medium follower count: " + driver.find_element(

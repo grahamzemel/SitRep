@@ -12,12 +12,13 @@ LD_LIBRARY_PATH:
 /usr/local/lib:/usr/lib:/lib:/app/vendor/firefox:/app/vendor
 PATH:
 /usr/local/bin:/usr/bin:/bin:/app/vendor/firefox:/app/vendor/
+UPDATER_KEY:  
+XXXXXXXXXX:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
 ```
 
-## Here's the config.ini file with sample data copied and pasted:
+## Here's the .env file with sample data copied and pasted:
 ```
-[CONFIG]
-UPDATER_KEY=XXXXXXXXXX:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 NEWS_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 MEDIUMUSER=grahamzemel
 GRIDPOINTS=34,32
