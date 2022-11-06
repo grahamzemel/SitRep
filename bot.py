@@ -271,7 +271,6 @@ def sitRep(bot, update):
 
 
 if __name__ == '__main__':
-    print(UPDATER_KEY)
     updater = Updater(UPDATER_KEY, use_context=True)
 
     dp = updater.dispatcher
