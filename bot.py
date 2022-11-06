@@ -25,9 +25,20 @@ from telegram import MessageEntity, ParseMode, ReplyMarkup
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
 
 load_dotenv(".env")
+UPDATER_KEY = os.getenv("UPDATER_KEY")
+NEWS_API_KEY = os.getenv("NEWS_API_KEY")
+MEDIUMUSER = os.getenv("MEDIUMUSER")
+GRIDPOINTS = os.getenv("GRIDPOINTS")
+SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
+SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
+SPOTIFY_USER_ID = os.getenv("SPOTIFY_USER_ID")
+SPOTIFY_USER = os.getenv("SPOTIFY_USER")
+SPOTIFY_PASS = os.getenv("SPOTIFY_PASS")
+SPOTIFY_DEVICE = os.getenv("SPOTIFY_DEVICE")
 # Error handling
 def error(update, context):
-    print(f'Update {update} caused error {context.error}')
+    # print(f'Update {update} caused error {context.error}')
+    update.message.reply_text("Error: " + str(context.error))
 
 # Helper functions
 def need_help(bot, update):
@@ -42,7 +53,7 @@ def start_bot(bot, update):
     bot.message.reply_text("Hey " + bot.message.chat.first_name +
                            "! My name's SitRepBot (Situation Report Robot). \n")
     bot.message.reply_text('----BOT STARTED----')
-    bot.message.reply_text('Use /stop to stop the bot (in development). \n')
+    bot.message.reply_text('Use /status to see the status of the bot. \n')
     bot.message.reply_text('Use /force run the bot at any time. \n')
     bot.message.reply_text('Use /help to see all commands. \n')
     bot.message.reply_text('--------')
@@ -133,7 +144,7 @@ def sitRep(bot, update):
     # Medium followers via selenium automation
     #
     try:
-        driver.get("https://" + os.environ['MEDIUMUSER'] + ".medium.com/followers")
+        driver.get("https://{}.medium.com/followers".format(MEDIUMUSER))
         bot.message.reply_text("Current Medium follower count: " + driver.find_element(
             By.XPATH, '//*[@id="root"]/div/div[3]/div[1]/div[3]/div/div/h2').text + "\n")
     except NoSuchElementException:
@@ -145,8 +156,7 @@ def sitRep(bot, update):
     # Weather API
     #
     try:
-        response = requests.get("https://api.weather.gov/gridpoints/OKX/" +
-                                os.environ['GRIDPOINTS'] + "/forecast")
+        response = requests.get("https://api.weather.gov/gridpoints/OKX/{}/forecast".format(GRIDPOINTS))
         weatherResponse = response.json()
         bot.message.reply_text(
             "Today's weather: " + weatherResponse['properties']['periods'][0]['detailedForecast'] + "\n")
@@ -159,13 +169,10 @@ def sitRep(bot, update):
     bot.message.reply_text("--------\n")
     # Bit of a mess, requires a specific kind of OAUTH2 token instead of regular client credentials in order to access /me endpoints. 
     # This is due to the fact that the Spotify API is not a public API, and requires a user to be logged in to access their own data.
-    CLIENT_ID = os.environ['SPOTIFY_CLIENT_ID']
-    CLIENT_SECRET = os.environ['SPOTIFY_CLIENT_SECRET']
-
     scope = "user-read-playback-state user-modify-playback-state user-library-read"
     sp = spotipy.oauth2.SpotifyOAuth(
         # Make sure to configure your localhost redirect URI here in your spotify developer app to the exact same string in the next line
-        client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri="http://localhost:8080", scope=scope)
+        client_id=SPOTIFY_CLIENT_ID, client_secret=SPOTIFY_CLIENT_SECRET, redirect_uri="http://localhost:8080", scope=scope)
     auth_code = sp.get_access_token(as_dict=False)
     # IF the token is obtained through automation if you've inputted the correct plaintext username and password in the config.ini file, this will work
     try:
@@ -232,13 +239,9 @@ def sitRep(bot, update):
     # News API
     # Just a neat little feature to get the top 5 news articles from a news API I found, feel free to use your own
     try:
-        techResponse = requests.get('https://newsapi.org/v2/top-headlines?country=us&category=technology&pageSize=2&apiKey=' +
-                                    os.environ['NEWS_API_KEY']).json()
-        scienceResponse = requests.get('https://newsapi.org/v2/top-headlines?country=us&category=science&pageSize=2&apiKey=' +
-                                       os.environ['NEWS_API_KEY']).json()
-        generalResponse = requests.get('https://newsapi.org/v2/top-headlines?country=us&category=general&pageSize=1&apiKey=' +
-                                       os.environ['NEWS_API_KEY']).json()
-
+        techResponse = requests.get('https://newsapi.org/v2/top-headlines?country=us&category=technology&pageSize=2&apiKey={}'.format(NEWS_API_KEY)).json()
+        scienceResponse = requests.get('https://newsapi.org/v2/top-headlines?country=us&category=science&pageSize=2&apiKey={}'.format(NEWS_API_KEY)).json()
+        generalResponse = requests.get('https://newsapi.org/v2/top-headlines?country=us&category=general&pageSize=1&apiKey={}'.format(NEWS_API_KEY)).json()
         bot.message.reply_text("Here are your top headlines: \n")
         # Gets a certain number of the top articles from each category and parses them nicely into message replies
         for i in range(0, 2):
@@ -268,7 +271,7 @@ def sitRep(bot, update):
 
 
 if __name__ == '__main__':
-    botToken = os.environ['UPDATER_KEY']
+    botToken = UPDATER_KEY
     updater = Updater(botToken, use_context=True)
 
     dp = updater.dispatcher
