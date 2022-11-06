@@ -1,5 +1,4 @@
 aiofiles==22.1.0
-altgraph==0.17.2
 appdirs==1.4.4
 APScheduler==3.6.3
 async-generator==1.10

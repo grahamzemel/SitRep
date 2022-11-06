@@ -1,6 +1,5 @@
 # Written by Graham Zemel, 2022
 
-import configparser
 import json
 import os
 import threading
@@ -14,6 +13,7 @@ from wsgiref.util import request_uri
 
 import requests
 import spotipy
+from dotenv import load_dotenv
 from flask import request
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -24,10 +24,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from telegram import MessageEntity, ParseMode, ReplyMarkup
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
 
-# Environment variables
-envVar = configparser.ConfigParser()
-envVar.read('config.ini')
-
+load_dotenv(".env")
 # Error handling
 def error(update, context):
     print(f'Update {update} caused error {context.error}')
@@ -136,8 +133,7 @@ def sitRep(bot, update):
     # Medium followers via selenium automation
     #
     try:
-        driver.get("https://" + envVar.get('CONFIG', 'MEDIUMUSER',
-                   vars=os.environ) + ".medium.com/followers")
+        driver.get("https://" + os.environ['MEDIUMUSER'] + ".medium.com/followers")
         bot.message.reply_text("Current Medium follower count: " + driver.find_element(
             By.XPATH, '//*[@id="root"]/div/div[3]/div[1]/div[3]/div/div/h2').text + "\n")
     except NoSuchElementException:
@@ -150,7 +146,7 @@ def sitRep(bot, update):
     #
     try:
         response = requests.get("https://api.weather.gov/gridpoints/OKX/" +
-                                envVar.get('CONFIG', 'GRIDPOINTS', vars=os.environ) + "/forecast")
+                                os.environ['GRIDPOINTS'] + "/forecast")
         weatherResponse = response.json()
         bot.message.reply_text(
             "Today's weather: " + weatherResponse['properties']['periods'][0]['detailedForecast'] + "\n")
@@ -163,9 +159,8 @@ def sitRep(bot, update):
     bot.message.reply_text("--------\n")
     # Bit of a mess, requires a specific kind of OAUTH2 token instead of regular client credentials in order to access /me endpoints. 
     # This is due to the fact that the Spotify API is not a public API, and requires a user to be logged in to access their own data.
-    CLIENT_ID = envVar.get('CONFIG', 'SPOTIFY_CLIENT_ID', vars=os.environ)
-    CLIENT_SECRET = envVar.get(
-        'CONFIG', 'SPOTIFY_CLIENT_SECRET', vars=os.environ)
+    CLIENT_ID = os.environ['SPOTIFY_CLIENT_ID']
+    CLIENT_SECRET = os.environ['SPOTIFY_CLIENT_SECRET']
 
     scope = "user-read-playback-state user-modify-playback-state user-library-read"
     sp = spotipy.oauth2.SpotifyOAuth(
@@ -175,8 +170,7 @@ def sitRep(bot, update):
     # IF the token is obtained through automation if you've inputted the correct plaintext username and password in the config.ini file, this will work
     try:
         # Grab your top 3 playlists
-        playlistResp = requests.get("https://api.spotify.com/v1/users/" + envVar.get('CONFIG', 'SPOTIFY_USER_ID',
-                                    vars=os.environ) + "/playlists?offset=0&limit=3", headers={'Authorization': 'Bearer {token}'.format(token=auth_code)})
+        playlistResp = requests.get("https://api.spotify.com/v1/users/" + os.environ['SPOTIFY_USER_ID'] + "/playlists?offset=0&limit=3", headers={'Authorization': 'Bearer {token}'.format(token=auth_code)})
         spotifyResponse = playlistResp.json()
         bot.message.reply_text("Here are your recent playlists: ")
         spotifyPlaylists = spotifyResponse['items']
@@ -196,7 +190,7 @@ def sitRep(bot, update):
         for device in bluetoothResponse['devices']:
             # Search for a specific device name in the list of bluetooth devices defined by the device ID defined in the config.ini file
             # This is not necessary, but I have a specific bluetooth speaker I want to play music on. It will require a bit of tinkering to find the ID though, as it is not the plaintext name
-            if (device['name'] == envVar.get('CONFIG', 'SPOTIFY_DEVICE', vars=os.environ)):
+            if (device['name'] == os.environ['SPOTIFY_DEVICE']):
                 speakerID = device['id']
                 foundSpeaker = True
                 # Use my speaker if device is found
@@ -239,11 +233,11 @@ def sitRep(bot, update):
     # Just a neat little feature to get the top 5 news articles from a news API I found, feel free to use your own
     try:
         techResponse = requests.get('https://newsapi.org/v2/top-headlines?country=us&category=technology&pageSize=2&apiKey=' +
-                                    envVar.get('CONFIG', 'NEWS_API_KEY', vars=os.environ)).json()
+                                    os.environ['NEWS_API_KEY']).json()
         scienceResponse = requests.get('https://newsapi.org/v2/top-headlines?country=us&category=science&pageSize=2&apiKey=' +
-                                       envVar.get('CONFIG', 'NEWS_API_KEY', vars=os.environ)).json()
+                                       os.environ['NEWS_API_KEY']).json()
         generalResponse = requests.get('https://newsapi.org/v2/top-headlines?country=us&category=general&pageSize=1&apiKey=' +
-                                       envVar.get('CONFIG', 'NEWS_API_KEY', vars=os.environ)).json()
+                                       os.environ['NEWS_API_KEY']).json()
 
         bot.message.reply_text("Here are your top headlines: \n")
         # Gets a certain number of the top articles from each category and parses them nicely into message replies
@@ -274,7 +268,7 @@ def sitRep(bot, update):
 
 
 if __name__ == '__main__':
-    botToken = (envVar.get('CONFIG', 'UPDATER_KEY', vars=os.environ))
+    botToken = os.environ['UPDATER_KEY']
     updater = Updater(botToken, use_context=True)
 
     dp = updater.dispatcher
