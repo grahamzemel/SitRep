@@ -24,17 +24,24 @@ from spotipy.oauth2 import SpotifyOAuth
 from telegram import MessageEntity, ParseMode, ReplyMarkup
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
 
+# See readme for more info on required variables
 load_dotenv(".env")
+# Telegram bot var
 UPDATER_KEY = os.getenv("UPDATER_KEY")
+# News function var
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
+# Medium function var
 MEDIUMUSER = os.getenv("MEDIUMUSER")
+# Weather function var
 GRIDPOINTS = os.getenv("GRIDPOINTS")
+# Spotify function vars 
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 SPOTIFY_USER_ID = os.getenv("SPOTIFY_USER_ID")
 SPOTIFY_USER = os.getenv("SPOTIFY_USER")
 SPOTIFY_PASS = os.getenv("SPOTIFY_PASS")
 SPOTIFY_DEVICE = os.getenv("SPOTIFY_DEVICE")
+
 # Error handling
 def error(update, context):
     # print(f'Update {update} caused error {context.error}')
@@ -143,7 +150,6 @@ def sitRep(bot, update):
 
     # Medium followers via selenium automation
     #
-    print(MEDIUMUSER)
     try:
         driver.get("https://{}.medium.com/followers".format(MEDIUMUSER))
         bot.message.reply_text("Current Medium follower count: " + driver.find_element(

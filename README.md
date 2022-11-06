@@ -1,8 +1,8 @@
 # Situation Report (Sit Rep) Bot by Graham Zemel
 Written by Graham Zemel, using Selenium, Python, and Heroku
 # NOTE: 
-## UPDATE LINES 122-125 IN 'bot.py' IF RUNNING LOCALLY  
-### Otherwise, if you're using Heroku, set these config vars:
+## UPDATE LINES 122-125 IN 'bot.py' IF RUNNING LOCALLY - REQUIRED ONCE TO CREATE SPOTIPY TOKEN CACHE (for some reason)
+### Required config vars:
 ```
 FIREFOX_BIN:
 /app/vendor/firefox/firefox
@@ -14,11 +14,6 @@ PATH:
 /usr/local/bin:/usr/bin:/bin:/app/vendor/firefox:/app/vendor/
 UPDATER_KEY:  
 XXXXXXXXXX:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-```
-
-## Here's the .env file with sample data copied and pasted:
-```
 NEWS_API_KEY=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 MEDIUMUSER=grahamzemel
 GRIDPOINTS=34,32
